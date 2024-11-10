@@ -1,0 +1,34 @@
+{
+    "flavors": {
+        "fdroid": {
+            "apk": "https://f-droid.org/repo/org.schabi.newpipe_999.apk",
+            "hash": "4276951dd31a6d2a385bde0c4965306b7072d72b70e5704a053aa53f695accec",
+            "hash_type": "sha256",
+            "version": "0.27.2",
+            "version_code": 999
+        },
+        "github": {
+            "stable": {
+                "apk": "https://archive.newpipe.net/fdroid/repo/NewPipe_v0.27.2.apk",
+                "hash": "6eca47f1713000790d4bf4eeb3d7565abb78a091fedda2c78061203e660a4041",
+                "hash_type": "sha256",
+                "version": "0.27.2",
+                "version_code": 999
+            }
+        },
+        "newpipe": {
+            "apk": "https://archive.newpipe.net/fdroid/repo/NewPipe_v0.27.2.apk",
+            "hash": "6eca47f1713000790d4bf4eeb3d7565abb78a091fedda2c78061203e660a4041",
+            "hash_type": "sha256",
+            "version": "0.27.2",
+            "version_code": 999
+        }
+    },
+    "stats": {
+        "contributors": 866,
+        "forks": 3070,
+        "stargazers": 31588,
+        "translations": 118,
+        "watchers": 605
+    }
+}
