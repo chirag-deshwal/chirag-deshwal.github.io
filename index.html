@@ -1,1 +1,573 @@
-<p> hi Rahul is here </p>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Rahul Deshwal - Android & Flutter Developer Portfolio CD.OS">
+    <title>Rahul Deshwal</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700&family=Sacramento&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Cytoscape.js for Interactive Graph -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Boot Sequence Overlay -->
+    <div id="boot-sequence">
+        <div class="boot-text">
+            <span>> INITIALIZING RL.CV KERNEL...</span>
+            <span>> LOADING ASSETS...</span>
+            <span>> ESTABLISHING SECURE CONNECTION...</span>
+            <span>> ACCESS GRANTED.</span>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div class="app-container">
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <i class="fas fa-terminal"></i>
+                <span class="brand-text">RL.CV</span>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#hub" class="nav-item active" data-tab="hub">
+                    <i class="fas fa-th-large"></i>
+                    <span>Central Hub</span>
+                </a>
+                <a href="#achievements" class="nav-item" data-tab="achievements">
+                    <i class="fas fa-trophy"></i>
+                    <span>Achievements</span>
+                </a>
+                <a href="#deployments" class="nav-item" data-tab="deployments">
+                    <i class="fas fa-code-branch"></i>
+                    <span>Deployments</span>
+                </a>
+                <a href="#skills" class="nav-item" data-tab="skills">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Core Skills</span>
+                </a>
+                <a href="#comms" class="nav-item" data-tab="comms">
+                    <i class="fas fa-at"></i>
+                    <span>Communication</span>
+                </a>
+            </nav>
+
+            <div class="user-mini-profile">
+                <div class="avatar-mini">
+                    <img src="https://github.com/chirag-deshwal.png" alt="Profile">
+                </div>
+                <div class="user-info">
+                    <span class="user-name">Rahul Deshwal</span>
+                    <span class="user-level">LEVEL 25 DEV</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+
+            <!-- Dashboard Grid (Central Hub) -->
+            <div id="hub-view" class="view-section active">
+
+                <!-- Hero Card -->
+                <div class="card hero-card">
+                    <div class="card-header">
+                        <span class="status-badge success">KERNEL ACCESS GRANTED</span>
+                        <div class="line-spacer"></div>
+                    </div>
+                    <div class="hero-body">
+                        <h1 class="signature-name">Rahul Deshwal</h1>
+                        <h2 class="role-title">Android Developer <span class="blink">_</span></h2>
+                        <p class="bio-text">
+                            Experienced app developer skilled in <strong>Kotlin</strong>, <strong>Java</strong>, and
+                            <strong>Flutter</strong> with a strong background in app creation and enhancement.
+                            Proficient in Firebase and AI integration for high-performance mobile experiences.
+                        </p>
+                        <div class="action-buttons">
+                            <button class="btn-primary" onclick="navigateToTab('deployments')">
+                                <i class="fas fa-rocket"></i> View Projects
+                            </button>
+                            <a href="https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" download class="btn-secondary" onclick="showDownloadMessage()">
+                                <i class="fas fa-download"></i> Download Resume
+                            </a>
+                        </div>
+                    </div>
+                    <div class="hero-character">
+                        <img src="imgs/rahul_hero_img.png"
+                            onerror="this.src='https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png'; this.style.filter='grayscale(100%) brightness(0.5)';"
+                            alt="Rahul Character">
+                    </div>
+                </div>
+
+                <!-- Lower Grid -->
+                <div class="dashboard-grid">
+
+                    <!-- System Achievements -->
+                    <div class="card achievements-card">
+                        <div class="card-top-bar">
+                            <h3><i class="fas fa-medal"></i> System Achievements</h3>
+                            <span class="status-text">STATUS: OPTIMIZED</span>
+                        </div>
+                        <div class="achievements-list">
+                            <div class="achievement-item">
+                                <div class="icon-box red"><i class="fas fa-trophy"></i></div>
+                                <div class="ach-details">
+                                    <h4>Founder of Dtrend</h4>
+                                    <p>Solo Developer Firm establishing secure digital solutions.</p>
+                                </div>
+                            </div>
+                            <div class="achievement-item">
+                                <div class="icon-box red"><i class="fas fa-folder-open"></i></div>
+                                <div class="ach-details">
+                                    <h4>Open Source</h4>
+                                    <p>Creator of FocusLab & active contributor to community.</p>
+                                </div>
+                            </div>
+                            <div class="achievement-item">
+                                <div class="icon-box red"><i class="fas fa-project-diagram"></i></div>
+                                <div class="ach-details">
+                                    <h4>10+ Projects</h4>
+                                    <p>Developed and deployed feature-rich applications.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dev Analytics -->
+                    <div class="card analytics-card">
+                        <div class="card-top-bar">
+                            <h3><i class="fas fa-chart-bar"></i> Dev Analytics</h3>
+                        </div>
+                        <div class="analytics-body">
+                            <div class="stat-row">
+                                <span>Total Deployments</span>
+                                <span class="stat-value">24</span>
+                            </div>
+                            <div class="stat-row">
+                                <span>System Uptime</span>
+                                <span class="stat-value red-text">7,000h+</span>
+                            </div>
+
+                            <div class="skill-bar-container">
+                                <div class="skill-info">
+                                    <span>ANDROID DOMINANCE</span>
+                                    <span>95%</span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" style="width: 95%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-bar-container">
+                                <div class="skill-info">
+                                    <span>FLUTTER SYNC</span>
+                                    <span>80%</span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" style="width: 80%;"></div>
+                                </div>
+                            </div>
+
+                            <div class="skill-bar-container">
+                                <div class="skill-info">
+                                    <span>AI INTEGRATION</span>
+                                    <span>70%</span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" style="width: 70%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Grid: Skills and GitHub Activity -->
+                <div class="bottom-grid">
+
+                    <!-- Core Skills Grid -->
+                    <div class="card skills-grid-card">
+                        <div class="card-top-bar">
+                            <h3><i class="fas fa-microchip"></i> Core Processing Skills</h3>
+                        </div>
+                        <div class="skills-grid">
+                            <div class="skill-item">
+                                <i class="fab fa-android"></i>
+                                <span>Kotlin</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fab fa-java"></i>
+                                <span>Java</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-mobile-alt"></i>
+                                <span>Android SDK</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-code-branch"></i>
+                                <span>Flutter</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-database"></i>
+                                <span>Firebase</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-network-wired"></i>
+                                <span>REST API</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-cogs"></i>
+                                <span>MVVM</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fab fa-git-alt"></i>
+                                <span>Git</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-paint-brush"></i>
+                                <span>Jetpack Compose</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-brain"></i>
+                                <span>AI Integration</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-server"></i>
+                                <span>SQLite</span>
+                            </div>
+                            <div class="skill-item">
+                                <i class="fas fa-tools"></i>
+                                <span>Room DB</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="card github-calendar-card">
+                        <div class="card-top-bar">
+                            <h3><i class="fas fa-link"></i> Connect</h3>
+                        </div>
+                        <div class="social-links">
+                            <a href="https://github.com/chirag-deshwal" target="_blank" class="social-link">
+                                <i class="fab fa-github"></i>
+                                <span>GitHub</span>
+                            </a>
+                            <a href="https://instagram.com/iamrahuldeshwal" target="_blank" class="social-link">
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                            <a href="https://linkedin.com/in/iamrahuldeshwal" target="_blank" class="social-link">
+                                <i class="fab fa-linkedin"></i>
+                                <span>LinkedIn</span>
+                            </a>
+                            <a href="https://dribbble.com/iamrahuldeshwal" target="_blank" class="social-link">
+                                <i class="fab fa-dribbble"></i>
+                                <span>Dribbble</span>
+                            </a>
+                            <a href="mailto:care.deshwal@gmail.com" class="social-link">
+                                <i class="fas fa-envelope"></i>
+                                <span>Email</span>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Deployments / Projects tab -->
+            <div id="deployments-view" class="view-section" style="display:none;">
+                <div class="card full-height">
+                    <h2>Deployments Log</h2>
+                    <div class="projects-grid">
+                        <!-- Planeshooter Project -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <i class="fas fa-plane"></i>
+                                <h3>Planeshooter</h3>
+                            </div>
+                            <p class="project-description">A high-performance Android game featuring interactive plane shooting mechanics with smooth gameplay, responsive controls, and engaging visual effects.</p>
+                            <div class="project-details">
+                                <div class="detail-item">
+                                    <strong>Type:</strong> Android Game
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Tech Stack:</strong> Java, Kotlin, Android SDK, Canvas API
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Architecture:</strong> MVC Pattern, Custom Game Loop
+                                </div>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Java</span>
+                                    <span class="tech-tag">Kotlin</span>
+                                    <span class="tech-tag">Graphics</span>
+                                    <span class="tech-tag">Game Logic</span>
+                                </div>
+                                <div class="problem-solving">
+                                    <strong>Problem Solving:</strong>
+                                    <ul>
+                                        <li>Optimized rendering pipeline for smooth 60 FPS performance</li>
+                                        <li>Implemented collision detection algorithm for accurate hit detection</li>
+                                        <li>Memory management to prevent lag on lower-end devices</li>
+                                        <li>Touch input handling for responsive player control</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <a href="https://github.com/chirag-deshwal/Planeshooter" target="_blank" class="btn-primary">View Repository</a>
+                        </div>
+
+                        <!-- QuickWhatsAppChat Project -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <i class="fab fa-whatsapp"></i>
+                                <h3>QuickWhatsAppChat</h3>
+                            </div>
+                            <p class="project-description">A utility application that simplifies WhatsApp messaging by enabling quick contacts and streamlined chat initiation without saving phone numbers.</p>
+                            <div class="project-details">
+                                <div class="detail-item">
+                                    <strong>Type:</strong> Messaging Utility Tool
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Tech Stack:</strong> Kotlin, Android SDK, SharedPreferences, Intent API
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Architecture:</strong> MVP Pattern, Native Android Components
+                                </div>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Kotlin</span>
+                                    <span class="tech-tag">WhatsApp API</span>
+                                    <span class="tech-tag">Intent Handling</span>
+                                    <span class="tech-tag">UI/UX</span>
+                                </div>
+                                <div class="problem-solving">
+                                    <strong>Problem Solving:</strong>
+                                    <ul>
+                                        <li>Implemented seamless WhatsApp intent integration</li>
+                                        <li>Contact management with persistent storage using SharedPreferences</li>
+                                        <li>Validation logic to ensure proper phone number formatting</li>
+                                        <li>User-friendly UI for quick access to frequent contacts</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <a href="https://github.com/chirag-deshwal/QuickWhatsAppChat" target="_blank" class="btn-primary">View Repository</a>
+                        </div>
+
+                        <!-- Random Jokes Browser Extension -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <i class="fas fa-laugh"></i>
+                                <h3>Random Jokes Extension</h3>
+                            </div>
+                            <p class="project-description">A Chrome browser extension that displays random jokes to users, providing entertainment and mood enhancement while browsing the web.</p>
+                            <div class="project-details">
+                                <div class="detail-item">
+                                    <strong>Type:</strong> Chrome Browser Extension
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Tech Stack:</strong> HTML5, CSS3, JavaScript, Fetch API, JSON
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Architecture:</strong> Client-side rendering, External API consumption
+                                </div>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">HTML5</span>
+                                    <span class="tech-tag">CSS3</span>
+                                    <span class="tech-tag">JavaScript</span>
+                                    <span class="tech-tag">Extension API</span>
+                                </div>
+                                <div class="problem-solving">
+                                    <strong>Problem Solving:</strong>
+                                    <ul>
+                                        <li>Integrated third-party joke API with proper error handling</li>
+                                        <li>Implemented caching to reduce API calls and improve performance</li>
+                                        <li>Cross-origin request handling for secure API communication</li>
+                                        <li>Responsive UI design for popup display compatibility</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <a href="https://github.com/chirag-deshwal/Random_Jokes_Chrom_extension" target="_blank" class="btn-primary">View Repository</a>
+                        </div>
+
+                        <!-- FocusLab Flutter Project -->
+                        <div class="project-card">
+                            <div class="project-header">
+                                <i class="fas fa-brain"></i>
+                                <h3>FocusLab Flutter</h3>
+                            </div>
+                            <p class="project-description">A cross-platform productivity application built with Flutter to help users maintain focus, manage tasks efficiently, and track their productivity metrics.</p>
+                            <div class="project-details">
+                                <div class="detail-item">
+                                    <strong>Type:</strong> Productivity & Task Management App
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Tech Stack:</strong> Flutter, Dart, SQLite, Provider, Firebase
+                                </div>
+                                <div class="detail-item">
+                                    <strong>Architecture:</strong> BLoC Pattern, Clean Architecture
+                                </div>
+                                <div class="tech-tags">
+                                    <span class="tech-tag">Flutter</span>
+                                    <span class="tech-tag">Dart</span>
+                                    <span class="tech-tag">SQLite</span>
+                                    <span class="tech-tag">State Management</span>
+                                </div>
+                                <div class="problem-solving">
+                                    <strong>Problem Solving:</strong>
+                                    <ul>
+                                        <li>Implemented efficient state management using Provider pattern</li>
+                                        <li>Local database (SQLite) for offline task persistence</li>
+                                        <li>Timer functionality with background notifications</li>
+                                        <li>Analytics integration to track user productivity metrics</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <a href="https://github.com/chirag-deshwal/focus_lab_flutter" target="_blank" class="btn-primary">View Repository</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skills Mind Map Tab -->
+            <div id="skills-view" class="view-section" style="display:none;">
+                <div class="card full-height">
+                    <div class="skills-header">
+                        <h2>Core Skills Mind Map</h2>
+                        <p class="skills-subtitle">Interactive visualization of skill connections and dependencies</p>
+                    </div>
+                    <div id="cy" class="cytoscape-container"></div>
+                    <div class="skills-controls">
+                        <button id="resetZoom" class="control-btn"><i class="fas fa-redo"></i> Reset View</button>
+                        <button id="zoomIn" class="control-btn"><i class="fas fa-search-plus"></i> Zoom In</button>
+                        <button id="zoomOut" class="control-btn"><i class="fas fa-search-minus"></i> Zoom Out</button>
+                        <span class="control-info">💡 Drag nodes to move • Click nodes to highlight connections • Scroll to zoom</span>
+                    </div>
+                    <div class="skills-legend">
+                        <h3>Legend</h3>
+                        <div class="legend-grid">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #00D4FF; border-color: #0099CC;"></div>
+                                <span>Mobile App (Android)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #FF6B6B; border-color: #CC0000;"></div>
+                                <span>Database Hub</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #7F52FF; border-color: #5C3ACC;"></div>
+                                <span>Languages & Frameworks</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background: #FFA500; border-color: #FF8C00;"></div>
+                                <span>Backend & Services</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Communication / Contact tab -->
+            <div id="comms-view" class="view-section" style="display:none;">
+                <div class="card full-height">
+                    <h2>Communication Channels</h2>
+                    <div class="contact-grid">
+                        <div class="contact-item">
+                            <i class="fab fa-github"></i>
+                            <h3>GitHub</h3>
+                            <p>Check out my open source projects and contributions</p>
+                            <div class="contact-details">
+                                <span class="detail-tag">Public Repositories</span>
+                                <span class="detail-tag">Active Contributor</span>
+                                <span class="detail-tag">Project Showcase</span>
+                            </div>
+                            <a href="https://github.com/chirag-deshwal" target="_blank" class="btn-primary">Visit Profile</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-linkedin"></i>
+                            <h3>LinkedIn</h3>
+                            <p>Connect professionally and view my career journey</p>
+                            <div class="contact-details">
+                                <span class="detail-tag">Professional Networks</span>
+                                <span class="detail-tag">Experience</span>
+                                <span class="detail-tag">Recommendations</span>
+                            </div>
+                            <a href="https://linkedin.com/in/iamrahuldeshwal" target="_blank" class="btn-primary">Connect</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope"></i>
+                            <h3>Email</h3>
+                            <p>Drop me a message for collaborations or opportunities</p>
+                            <div class="contact-details">
+                                <span class="detail-tag">Direct Contact</span>
+                                <span class="detail-tag">Quick Response</span>
+                                <span class="detail-tag">Inquiries Welcome</span>
+                            </div>
+                            <a href="mailto:care.deshwal@gmail.com" class="btn-primary">Send Email</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fab fa-instagram"></i>
+                            <h3>Instagram</h3>
+                            <p>Follow for tech updates and behind-the-scenes content</p>
+                            <div class="contact-details">
+                                <span class="detail-tag">Daily Posts</span>
+                                <span class="detail-tag">Personal Insights</span>
+                                <span class="detail-tag">Community Engagement</span>
+                                
+                            </div>
+                            <a href="https://instagram.com/iamrahuldeshwal" target="_blank" class="btn-primary">Follow</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Achievements / Certificates page -->
+            <div id="achievements-view" class="view-section" style="display:none;">
+                <div class="card full-height">
+                    <h2>Certificates & Achievements</h2>
+                    <div class="certificates-list">
+                        <!-- Example entries; duplicate structure for each certificate -->
+                        <div class="certificate-item">
+                            <h3>Python by Sololearn</h3>
+                            <img src="certificates/python_beginner_sololearn.png" alt="Python Beginner Certificate">
+                            <a href="https://www.sololearn.com/certificates/CT-HAQE7ZXF" target="_blank">Verify Certificate</a>
+                        </div>
+                        <div class="certificate-item">
+                            <h3>CoreJava by Sololearn</h3>
+                            <img src="certificates/java_sololearn.png" alt="CoreJava Certificate">
+                            <a href="https://www.sololearn.com/certificates/CT-KHDL7FNC" target="_blank">Verify Certificate</a>
+                        </div>
+                        <div class="certificate-item">
+                            <h3>Kotlin by Sololearn</h3>
+                            <img src="certificates/kotlin_sololearn.png" alt="Kotlin Certificate">
+                            <a href="https://www.sololearn.com/certificates/CT-IU589FHN" target="_blank">Verify Certificate</a>
+                        </div>
+                        <!-- Add more certificate items as needed -->
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
