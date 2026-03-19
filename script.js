@@ -60,18 +60,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     section.style.display = 'block';
                 }
                 
-                // Initialize mind map for skills tab
-                if (targetId === 'skills' && !cy) {
+                // Initialize constellation for skills tab
+                if (targetId === 'skills' && !constellationCanvas) {
                     setTimeout(() => {
                         try {
-                            const cyContainer = document.getElementById('cy');
-                            if (cyContainer) {
-                                initializeSkillsMindMap();
+                            const canvas = document.getElementById('skills-canvas');
+                            if (canvas) {
+                                // Ensure canvas is visible and has proper dimensions
+                                const container = canvas.parentElement;
+                                if (container && container.offsetWidth > 0) {
+                                    initializeSkillsConstellation();
+                                } else {
+                                    // Wait a bit more for the layout to settle
+                                    setTimeout(() => {
+                                        initializeSkillsConstellation();
+                                    }, 100);
+                                }
                             } else {
-                                console.warn('Cytoscape container not found');
+                                console.warn('Skills canvas not found');
                             }
                         } catch (error) {
-                            console.error('Error initializing mind map:', error);
+                            console.error('Error initializing constellation:', error);
                         }
                     }, 300);
                 }
@@ -138,194 +147,469 @@ document.addEventListener('DOMContentLoaded', () => {
     // Simple blinking cursor is already in CSS
     // Function to rotate roles could be added for "more interactive" feel
 
-    /* --- Interactive Skills Mind Map --- */
-    let cy = null;
+    /* --- Interactive Skills Constellation --- */
+    let constellationCanvas = null;
+    let constellationCtx = null;
+    let animationId = null;
+    let isAnimating = true;
+    let mouseX = 0;
+    let mouseY = 0;
+    let hoveredStar = null;
 
-    function initializeSkillsMindMap() {
-        cy = cytoscape({
-            container: document.getElementById('cy'),
-            style: [
-                {
-                    selector: 'node',
-                    style: {
-                        'content': 'data(label)',
-                        'text-valign': 'center',
-                        'text-halign': 'center',
-                        'background-color': 'data(color)',
-                        'width': 'data(size)',
-                        'height': 'data(size)',
-                        'border-width': '3px',
-                        'border-color': 'data(borderColor)',
-                        'color': '#FFFFFF',
-                        'font-size': 'data(fontSize)',
-                        'font-weight': 'bold',
-                        'font-family': 'var(--font-ui)',
-                        'text-background-color': '#0B0C15',
-                        'text-background-padding': '6px',
-                        'text-background-opacity': 0.95,
-                        'text-background-shape': 'roundrectangle',
-                        'text-margin-y': '2px',
-                        'box-shadow': 'data(shadow)',
-                        'transition-property': 'box-shadow',
-                        'transition-duration': '0.3s'
+    // Constellation data - positions will be scaled to canvas size
+    const constellations = {
+        mobile: {
+            name: 'Android Developer Journey',
+            description: 'Core Android ecosystem with modern frameworks and cross-platform capabilities',
+            color: '#00D4FF',
+            stars: [
+                { name: 'Android SDK', x: 0.25, y: 0.3, size: 8, connections: ['Kotlin', 'Java', 'Jetpack Compose', 'MVVM'] },
+                { name: 'Kotlin', x: 0.15, y: 0.4, size: 6, connections: ['Android SDK', 'Flutter'] },
+                { name: 'Java', x: 0.35, y: 0.4, size: 6, connections: ['Android SDK', 'API Integration'] },
+                { name: 'Jetpack Compose', x: 0.2, y: 0.2, size: 5, connections: ['Android SDK', 'MVVM'] },
+                { name: 'MVVM', x: 0.3, y: 0.15, size: 4, connections: ['Android SDK', 'Jetpack Compose'] }
+            ]
+        },
+        crossPlatform: {
+            name: 'Cross-Platform Nebula',
+            description: 'Flutter and Dart ecosystem for universal app development',
+            color: '#02569B',
+            stars: [
+                { name: 'Flutter', x: 0.6, y: 0.3, size: 7, connections: ['Dart', 'Firebase', 'SQLite'] },
+                { name: 'Dart', x: 0.5, y: 0.4, size: 6, connections: ['Flutter'] }
+            ]
+        },
+        data: {
+            name: 'Data Nebula',
+            description: 'Database technologies and data persistence solutions',
+            color: '#FF6B6B',
+            stars: [
+                { name: 'SQLite', x: 0.55, y: 0.25, size: 6, connections: ['Room DB', 'Flutter'] },
+                { name: 'Firebase', x: 0.65, y: 0.35, size: 6, connections: ['Flutter', 'Android SDK'] },
+                { name: 'Room DB', x: 0.5, y: 0.3, size: 5, connections: ['SQLite', 'Android SDK'] }
+            ]
+        },
+        backend: {
+            name: 'Backend Cluster',
+            description: 'Server-side technologies and API integrations',
+            color: '#FFA500',
+            stars: [
+                { name: 'REST API', x: 0.45, y: 0.7, size: 5, connections: ['Java', 'AI Integration'] },
+                { name: 'AI Integration', x: 0.55, y: 0.65, size: 4, connections: ['REST API', 'Android SDK'] }
+            ]
+        },
+        tools: {
+            name: 'Dev Tools Constellation',
+            description: 'Essential development tools and version control',
+            color: '#7F52FF',
+            stars: [
+                { name: 'Git', x: 0.4, y: 0.8, size: 5, connections: ['Android SDK', 'Flutter'] }
+            ]
+        }
+    };
+
+    // Flatten stars for easier access - positions will be calculated when canvas is ready
+    let allStars = [];
+
+    function initializeConstellationData() {
+        allStars = [];
+        Object.values(constellations).forEach(constellation => {
+            constellation.stars.forEach(star => {
+                // Convert relative positions to absolute pixel coordinates
+                const absoluteStar = {
+                    ...star,
+                    x: star.x * constellationCanvas.width,
+                    y: star.y * constellationCanvas.height,
+                    constellation: constellation,
+                    originalX: star.x * constellationCanvas.width,
+                    originalY: star.y * constellationCanvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    twinkle: Math.random() * Math.PI * 2,
+                    twinkleSpeed: 0.02 + Math.random() * 0.03
+                };
+                allStars.push(absoluteStar);
+            });
+        });
+    }
+
+    // Shooting stars
+    let shootingStars = [];
+
+    function createShootingStar() {
+        if (!constellationCanvas) return;
+        if (Math.random() < 0.02) { // 2% chance per frame
+            shootingStars.push({
+                x: Math.random() * constellationCanvas.width,
+                y: 0,
+                vx: (Math.random() - 0.5) * 2,
+                vy: Math.random() * 3 + 1,
+                life: 100,
+                maxLife: 100
+            });
+        }
+    }
+
+    function updateShootingStars() {
+        if (!constellationCanvas) return;
+        shootingStars = shootingStars.filter(star => {
+            star.x += star.vx;
+            star.y += star.vy;
+            star.life--;
+            return star.life > 0 && star.y < constellationCanvas.height;
+        });
+    }
+
+    function drawShootingStars() {
+        shootingStars.forEach(star => {
+            const alpha = star.life / star.maxLife;
+            constellationCtx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+            constellationCtx.lineWidth = 2;
+            constellationCtx.beginPath();
+            constellationCtx.moveTo(star.x, star.y);
+            constellationCtx.lineTo(star.x - star.vx * 5, star.y - star.vy * 5);
+            constellationCtx.stroke();
+        });
+    }
+
+    function initializeSkillsConstellation() {
+        constellationCanvas = document.getElementById('skills-canvas');
+        constellationCtx = constellationCanvas.getContext('2d');
+
+        // Set canvas size
+        resizeCanvas();
+
+        // Initialize constellation data with proper coordinates
+        initializeConstellationData();
+
+        // Mouse tracking
+        constellationCanvas.addEventListener('mousemove', (e) => {
+            const rect = constellationCanvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+
+            // Check for hovered star
+            hoveredStar = null;
+            allStars.forEach(star => {
+                const dx = mouseX - star.x;
+                const dy = mouseY - star.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < star.size + 10) {
+                    hoveredStar = star;
+                }
+            });
+
+            // Update skill details
+            updateSkillDetails();
+        });
+
+        constellationCanvas.addEventListener('mouseleave', () => {
+            hoveredStar = null;
+            updateSkillDetails();
+        });
+
+        constellationCanvas.addEventListener('click', () => {
+            if (hoveredStar) {
+                focusOnConstellation(hoveredStar.constellation);
+            }
+        });
+
+        // Window resize handler
+        window.addEventListener('resize', resizeCanvas);
+
+        // Start animation
+        animate();
+    }
+
+    function resizeCanvas() {
+        const container = document.querySelector('.constellation-container');
+        constellationCanvas.width = container.clientWidth;
+        constellationCanvas.height = container.clientHeight;
+
+        // Reinitialize constellation data with new canvas size
+        if (constellationCanvas.width > 0 && constellationCanvas.height > 0) {
+            initializeConstellationData();
+        }
+    }
+
+    function animate() {
+        if (!isAnimating || !constellationCanvas || !constellationCtx) return;
+
+        constellationCtx.clearRect(0, 0, constellationCanvas.width, constellationCanvas.height);
+
+        // Draw background stars
+        drawBackgroundStars();
+
+        // Create and update shooting stars
+        createShootingStar();
+        updateShootingStars();
+        drawShootingStars();
+
+        // Update and draw constellation stars
+        allStars.forEach(star => {
+            updateStar(star);
+            drawStar(star);
+        });
+
+        // Draw connections
+        drawConnections();
+
+        // Draw constellation boundaries
+        drawConstellationBoundaries();
+
+        animationId = requestAnimationFrame(animate);
+    }
+
+    function drawBackgroundStars() {
+        // Nebula effect
+        const time = Date.now() * 0.001;
+        const gradient = constellationCtx.createRadialGradient(
+            constellationCanvas.width / 2, constellationCanvas.height / 2, 0,
+            constellationCanvas.width / 2, constellationCanvas.height / 2, 300
+        );
+        gradient.addColorStop(0, `rgba(0, 212, 255, ${0.05 + Math.sin(time) * 0.02})`);
+        gradient.addColorStop(0.5, `rgba(127, 82, 255, ${0.03 + Math.cos(time * 0.7) * 0.01})`);
+        gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+        constellationCtx.fillStyle = gradient;
+        constellationCtx.fillRect(0, 0, constellationCanvas.width, constellationCanvas.height);
+
+        // Background stars
+        for (let i = 0; i < 100; i++) {
+            const x = (i * 37) % constellationCanvas.width;
+            const y = (i * 23) % constellationCanvas.height;
+            const brightness = 0.3 + Math.sin(Date.now() * 0.001 + i) * 0.2;
+
+            constellationCtx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
+            constellationCtx.beginPath();
+            constellationCtx.arc(x, y, 1, 0, Math.PI * 2);
+            constellationCtx.fill();
+        }
+    }
+
+    function updateStar(star) {
+        // Gentle floating motion
+        star.x += star.vx;
+        star.y += star.vy;
+
+        // Boundary checks - keep them close to their original positions so they don't wander heavily
+        const maxDrift = 40;
+        if (star.x < star.originalX - maxDrift || star.x > star.originalX + maxDrift) {
+            star.vx *= -1;
+            star.x = Math.max(star.originalX - maxDrift, Math.min(star.originalX + maxDrift, star.x));
+        }
+        if (star.y < star.originalY - maxDrift || star.y > star.originalY + maxDrift) {
+            star.vy *= -1;
+            star.y = Math.max(star.originalY - maxDrift, Math.min(star.originalY + maxDrift, star.y));
+        }
+
+        // Avoid hiding behind the UI panel on the right (approx 320px wide)
+        const maxRight = Math.max(10, constellationCanvas.width - 320);
+        if (star.x > maxRight) {
+            star.x -= 2;
+            if (star.vx > 0) star.vx *= -1;
+        }
+
+        // Twinkle effect
+        star.twinkle += star.twinkleSpeed;
+
+        // Mouse interaction
+        if (hoveredStar === star) {
+            const dx = mouseX - star.x;
+            const dy = mouseY - star.y;
+            star.x += dx * 0.02;
+            star.y += dy * 0.02;
+        }
+    }
+
+    function drawStar(star) {
+        const twinkleOpacity = 0.7 + Math.sin(star.twinkle) * 0.3;
+        const isHovered = hoveredStar === star;
+        const displaySize = isHovered ? star.size * 1.5 : star.size; // Grow slightly on hover
+
+        // Outer glow
+        if (isHovered) {
+            // Animated, pulsating larger glow
+            const glowSize = displaySize * (3 + Math.sin(Date.now() / 150) * 0.5);
+            const gradient = constellationCtx.createRadialGradient(star.x, star.y, 0, star.x, star.y, glowSize);
+            gradient.addColorStop(0, star.constellation.color + '60');
+            gradient.addColorStop(1, star.constellation.color + '00');
+            constellationCtx.fillStyle = gradient;
+            constellationCtx.beginPath();
+            constellationCtx.arc(star.x, star.y, glowSize, 0, Math.PI * 2);
+            constellationCtx.fill();
+        }
+
+        // Main star
+        constellationCtx.fillStyle = star.constellation.color;
+        constellationCtx.globalAlpha = twinkleOpacity;
+        constellationCtx.beginPath();
+        constellationCtx.arc(star.x, star.y, displaySize, 0, Math.PI * 2);
+        constellationCtx.fill();
+
+        // Inner bright core
+        constellationCtx.fillStyle = '#FFFFFF';
+        constellationCtx.globalAlpha = twinkleOpacity * 0.8;
+        constellationCtx.beginPath();
+        constellationCtx.arc(star.x, star.y, displaySize * 0.4, 0, Math.PI * 2);
+        constellationCtx.fill();
+
+        constellationCtx.globalAlpha = 1;
+
+        // Star name and connections (when hovered)
+        if (isHovered) {
+            constellationCtx.fillStyle = '#FFFFFF';
+            constellationCtx.font = 'bold 14px Outfit';
+            constellationCtx.textAlign = 'center';
+            constellationCtx.fillText(star.name, star.x, star.y - star.size - 25);
+            
+            if (star.connections && star.connections.length > 0) {
+                constellationCtx.fillStyle = '#AAAAAA';
+                constellationCtx.font = '11px Outfit';
+                constellationCtx.fillText('Connected to: ' + star.connections.join(', '), star.x, star.y - star.size - 10);
+            }
+        }
+    }
+
+    function drawConnections() {
+        allStars.forEach(star => {
+            star.connections.forEach(connectionName => {
+                const connectedStar = allStars.find(s => s.name === connectionName);
+                if (connectedStar) {
+                    const dx = connectedStar.x - star.x;
+                    const dy = connectedStar.y - star.y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    // Always draw specified connections, remove max distance limit
+                    const isHighlighted = (hoveredStar === star || hoveredStar === connectedStar);
+
+                    constellationCtx.strokeStyle = star.constellation.color;
+                    constellationCtx.globalAlpha = isHighlighted ? 0.9 : 0.3;
+                    constellationCtx.lineWidth = isHighlighted ? 3 : 1; // Thicker lines for hovered
+
+                    if (isHighlighted) {
+                        // Animated dashed lines for connections
+                        constellationCtx.setLineDash([8, 6]);
+                        constellationCtx.lineDashOffset = -Date.now() / 40;
+                    } else {
+                        constellationCtx.setLineDash([]);
                     }
-                },
-                {
-                    selector: 'node:hover',
-                    style: {
-                        'border-width': '4px',
-                        'border-color': '#FFFFFF',
-                        'box-shadow': '0 0 25px currentColor'
-                    }
-                },
-                {
-                    selector: 'node[category="hub"]',
-                    style: {
-                        'width': '110px',
-                        'height': '110px',
-                        'font-size': '13px',
-                        'text-background-padding': '8px',
-                        'box-shadow': '0 0 15px currentColor'
-                    }
-                },
-                {
-                    selector: 'node[category="primary"]',
-                    style: {
-                        'width': '85px',
-                        'height': '85px',
-                        'font-size': '12px',
-                        'box-shadow': '0 0 10px currentColor'
-                    }
-                },
-                {
-                    selector: 'node[category="secondary"]',
-                    style: {
-                        'width': '70px',
-                        'height': '70px',
-                        'font-size': '10px',
-                        'box-shadow': '0 0 8px currentColor'
-                    }
-                },
-                {
-                    selector: 'edge',
-                    style: {
-                        'line-color': 'data(edgeColor)',
-                        'width': 'data(edgeWidth)',
-                        'curve-style': 'bezier',
-                        'target-arrow-color': 'data(edgeColor)',
-                        'target-arrow-shape': 'vee',
-                        'opacity': 0.7,
-                        'z-index': 1
-                    }
-                },
-                {
-                    selector: 'edge.highlight',
-                    style: {
-                        'line-color': 'data(edgeColor)',
-                        'width': '3px',
-                        'target-arrow-color': 'data(edgeColor)',
-                        'opacity': 1,
-                        'z-index': 10,
-                        'box-shadow': '0 0 10px currentColor'
+
+                    constellationCtx.beginPath();
+                    constellationCtx.moveTo(star.x, star.y);
+                    constellationCtx.lineTo(connectedStar.x, connectedStar.y);
+                    constellationCtx.stroke();
+
+                    constellationCtx.setLineDash([]); // Reset immediately after stroke
+
+                    // Animated energy particles along connection
+                    if (isHighlighted && Math.random() < 0.2) { // Increased particle spawn rate
+                        const particleX = star.x + dx * Math.random();
+                        const particleY = star.y + dy * Math.random();
+
+                        constellationCtx.fillStyle = '#FFFFFF'; // Bright white particles
+                        constellationCtx.globalAlpha = 1.0;
+                        constellationCtx.beginPath();
+                        constellationCtx.arc(particleX, particleY, 2.5, 0, Math.PI * 2);
+                        constellationCtx.fill();
                     }
                 }
-            ],
-            elements: [
-                // Core Hubs
-                { data: { id: 'android', label: 'Mobile App', color: '#00D4FF', borderColor: '#0099CC', size: '110px', fontSize: '13px', shadow: '0 0 15px #00D4FF', category: 'hub' } },
-                { data: { id: 'databases', label: 'Databases', color: '#FF6B6B', borderColor: '#CC0000', size: '110px', fontSize: '13px', shadow: '0 0 15px #FF6B6B', category: 'hub' } },
+            });
+        });
+        constellationCtx.globalAlpha = 1;
+    }
 
-                // Android Ecosystem (Primary)
-                { data: { id: 'kotlin', label: 'Kotlin', color: '#7F52FF', borderColor: '#5C3ACC', size: '85px', fontSize: '12px', category: 'primary' } },
-                { data: { id: 'java', label: 'Java', color: '#FF6B6B', borderColor: '#CC0000', size: '85px', fontSize: '12px', category: 'primary' } },
-                { data: { id: 'sdk', label: 'Android SDK', color: '#4ECDC4', borderColor: '#2BA89F', size: '85px', fontSize: '12px', category: 'primary' } },
-                { data: { id: 'jetpack', label: 'Jetpack Compose', color: '#FFB347', borderColor: '#FF8C00', size: '85px', fontSize: '12px', category: 'primary' } },
-                { data: { id: 'mvvm', label: 'MVVM Pattern', color: '#95E1D3', borderColor: '#5DBFAA', size: '85px', fontSize: '12px', category: 'primary' } },
+    function drawConstellationBoundaries() {
+        Object.values(constellations).forEach(constellation => {
+            const stars = constellation.stars;
+            if (stars.length < 3) return;
 
-                // Cross-Platform (Primary)
-                { data: { id: 'flutter', label: 'Flutter', color: '#02569B', borderColor: '#013E7A', size: '85px', fontSize: '12px', category: 'primary' } },
-                { data: { id: 'dart', label: 'Dart', color: '#00D4D4', borderColor: '#00A0A0', size: '85px', fontSize: '12px', category: 'primary' } },
+            // Calculate bounding box
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            stars.forEach(star => {
+                minX = Math.min(minX, star.x);
+                minY = Math.min(minY, star.y);
+                maxX = Math.max(maxX, star.x);
+                maxY = Math.max(maxY, star.y);
+            });
 
-                // Database Technologies (Primary)
-                { data: { id: 'sqlite', label: 'SQLite', color: '#BFDB38', borderColor: '#99BB00', size: '85px', fontSize: '12px', category: 'primary' } },
-                { data: { id: 'firebase', label: 'Firebase', color: '#FFA500', borderColor: '#FF8C00', size: '85px', fontSize: '12px', category: 'primary' } },
-                { data: { id: 'room', label: 'Room DB', color: '#A8D5BA', borderColor: '#7DBFAA', size: '85px', fontSize: '12px', category: 'primary' } },
+            // Draw constellation outline
+            constellationCtx.strokeStyle = constellation.color;
+            constellationCtx.globalAlpha = 0.2;
+            constellationCtx.lineWidth = 1;
+            constellationCtx.setLineDash([5, 5]);
+            constellationCtx.strokeRect(minX - 20, minY - 20, maxX - minX + 40, maxY - minY + 40);
+            constellationCtx.setLineDash([]);
 
-                // Backend & Integration (Secondary)
-                { data: { id: 'api', label: 'REST API', color: '#C1666B', borderColor: '#994444', size: '70px', fontSize: '10px', category: 'secondary' } },
-                { data: { id: 'git', label: 'Git', color: '#F4511E', borderColor: '#CC3300', size: '70px', fontSize: '10px', category: 'secondary' } },
-                { data: { id: 'ai', label: 'AI Integration', color: '#9B59B6', borderColor: '#7A4499', size: '70px', fontSize: '10px', category: 'secondary' } },
+            constellationCtx.globalAlpha = 1;
+        });
+    }
 
-                // Edges - Android connections (Blue theme for Android)
-                { data: { source: 'android', target: 'kotlin', edgeColor: '#00D4FF', edgeWidth: '2.5px' } },
-                { data: { source: 'android', target: 'java', edgeColor: '#00D4FF', edgeWidth: '2.5px' } },
-                { data: { source: 'android', target: 'sdk', edgeColor: '#00D4FF', edgeWidth: '2.5px' } },
-                { data: { source: 'android', target: 'jetpack', edgeColor: '#00D4FF', edgeWidth: '2.5px' } },
-                { data: { source: 'android', target: 'mvvm', edgeColor: '#00D4FF', edgeWidth: '2.5px' } },
-                { data: { source: 'android', target: 'api', edgeColor: '#00D4FF', edgeWidth: '2px' } },
+    function focusOnConstellation(constellation) {
+        const centerX = constellationCanvas.width / 2;
+        const centerY = constellationCanvas.height / 2;
 
-                // Database connections (Red theme for Databases)
-                { data: { source: 'databases', target: 'sqlite', edgeColor: '#FF6B6B', edgeWidth: '2.5px' } },
-                { data: { source: 'databases', target: 'firebase', edgeColor: '#FF6B6B', edgeWidth: '2.5px' } },
-                { data: { source: 'databases', target: 'room', edgeColor: '#FF6B6B', edgeWidth: '2.5px' } },
+        // Calculate constellation center
+        let totalX = 0, totalY = 0;
+        constellation.stars.forEach(star => {
+            totalX += star.x;
+            totalY += star.y;
+        });
+        const constCenterX = totalX / constellation.stars.length;
+        const constCenterY = totalY / constellation.stars.length;
 
-                // Cross connections (Gradient-style colors)
-                { data: { source: 'kotlin', target: 'flutter', edgeColor: '#7F52FF', edgeWidth: '2px' } },
-                { data: { source: 'java', target: 'api', edgeColor: '#FF6B6B', edgeWidth: '2px' } },
-                { data: { source: 'firebase', target: 'android', edgeColor: '#FFA500', edgeWidth: '2px' } },
-                { data: { source: 'firebase', target: 'flutter', edgeColor: '#FFA500', edgeWidth: '2px' } },
-                { data: { source: 'room', target: 'android', edgeColor: '#A8D5BA', edgeWidth: '2px' } },
-                { data: { source: 'sqlite', target: 'flutter', edgeColor: '#BFDB38', edgeWidth: '2px' } },
-                { data: { source: 'git', target: 'android', edgeColor: '#F4511E', edgeWidth: '2px' } },
-                { data: { source: 'git', target: 'flutter', edgeColor: '#F4511E', edgeWidth: '2px' } },
-                { data: { source: 'ai', target: 'android', edgeColor: '#9B59B6', edgeWidth: '2px' } },
-                { data: { source: 'dart', target: 'flutter', edgeColor: '#00D4D4', edgeWidth: '2px' } },
-                { data: { source: 'mvvm', target: 'jetpack', edgeColor: '#95E1D3', edgeWidth: '2px' } }
-            ],
-            layout: {
-                name: 'cose',
-                directed: true,
-                roots: '#android',
-                animate: true,
-                animationDuration: 500,
-                avoidOverlap: true,
-                nodeSpacing: 10,
-                gravity: 0.25,
-                cooling: 0.95
-            },
-            wheelSensitivity: 0.1
+        // Smooth transition to constellation
+        const offsetX = centerX - constCenterX;
+        const offsetY = centerY - constCenterY;
+
+        allStars.forEach(star => {
+            star.x += offsetX * 0.5;
+            star.y += offsetY * 0.5;
         });
 
-        // Enable dragging
-        cy.elements().ungrabify();
-        cy.nodes().grabify();
+        // Update info panel
+        document.getElementById('constellation-title').textContent = constellation.name;
+        document.getElementById('constellation-desc').textContent = constellation.description;
+    }
 
-        // Click to highlight connections
-        cy.on('tap', 'node', function(evt) {
-            const node = evt.target;
-            cy.elements().removeClass('highlight');
-            node.connectedEdges().addClass('highlight');
-            node.addClass('highlight');
+    function resetView() {
+        allStars.forEach(star => {
+            star.x = star.originalX;
+            star.y = star.originalY;
+        });
+    }
+
+    function toggleAnimation() {
+        isAnimating = !isAnimating;
+        const btn = document.getElementById('toggleAnimation');
+        const icon = btn.querySelector('i');
+
+        if (isAnimating) {
+            icon.className = 'fas fa-play';
+            btn.innerHTML = '<i class="fas fa-play"></i> Pause Animation';
+            animate();
+        } else {
+            icon.className = 'fas fa-pause';
+            btn.innerHTML = '<i class="fas fa-pause"></i> Resume Animation';
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+    }
+
+    function updateSkillDetails() {
+        const skillItems = document.querySelectorAll('.skill-item');
+        skillItems.forEach(item => {
+            item.classList.remove('active');
         });
 
-        cy.on('tap', function() {
-            cy.elements().removeClass('highlight');
-        });
-
-        // Zoom and Pan controls
-        document.getElementById('zoomIn').addEventListener('click', () => {
-            cy.zoom(cy.zoom() * 1.2);
-        });
-
-        document.getElementById('zoomOut').addEventListener('click', () => {
-            cy.zoom(cy.zoom() / 1.2);
-        });
-
-        document.getElementById('resetZoom').addEventListener('click', () => {
-            cy.fit(undefined, 50);
-            cy.zoom(1);
-            cy.pan({ x: 0, y: 0 });
-        });
+        if (hoveredStar) {
+            const skillName = hoveredStar.name.toLowerCase().replace(/\s+/g, '');
+            const skillItem = document.querySelector(`[data-skill="${skillName}"]`);
+            if (skillItem) {
+                skillItem.classList.add('active');
+            }
+        }
     }
 
 });

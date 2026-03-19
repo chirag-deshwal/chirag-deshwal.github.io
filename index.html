@@ -17,9 +17,6 @@
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    <!-- Cytoscape.js for Interactive Graph -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
-
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -458,39 +455,76 @@
                 </div>
             </div>
 
-            <!-- Skills Mind Map Tab -->
+            <!-- Skills Constellation Tab -->
             <div id="skills-view" class="view-section" style="display:none;">
                 <div class="card full-height">
                     <div class="skills-header">
-                        <h2>Core Skills Mind Map</h2>
-                        <p class="skills-subtitle">Interactive visualization of skill connections and dependencies</p>
+                        <h2>Skills Constellation</h2>
+                        <p class="skills-subtitle">An animated universe of interconnected technologies and their
+                            connections in the Android Developer Journey</p>
                     </div>
-                    <div id="cy" class="cytoscape-container"></div>
-                    <div class="skills-controls">
-                        <button id="resetZoom" class="control-btn"><i class="fas fa-redo"></i> Reset View</button>
-                        <button id="zoomIn" class="control-btn"><i class="fas fa-search-plus"></i> Zoom In</button>
-                        <button id="zoomOut" class="control-btn"><i class="fas fa-search-minus"></i> Zoom Out</button>
-                        <span class="control-info">💡 Drag nodes to move • Click nodes to highlight connections • Scroll
-                            to zoom</span>
+                    <div class="constellation-container">
+                        <canvas id="skills-canvas" class="skills-canvas"></canvas>
+                        <div class="constellation-info">
+                            <div class="info-panel">
+                                <h3 id="constellation-title">Android Developer Journey</h3>
+                                <p id="constellation-desc">Core Android ecosystem with modern frameworks and
+                                    cross-platform capabilities</p>
+                            </div>
+                            <div class="skill-details" id="skill-details">
+                                <div class="skill-item active" data-skill="androidsdk">
+                                    <span class="skill-name">Android SDK</span>
+                                    <span class="skill-level">Expert</span>
+                                </div>
+                                <div class="skill-item" data-skill="kotlin">
+                                    <span class="skill-name">Kotlin</span>
+                                    <span class="skill-level">Advanced</span>
+                                </div>
+                                <div class="skill-item" data-skill="flutter">
+                                    <span class="skill-name">Flutter</span>
+                                    <span class="skill-level">Advanced</span>
+                                </div>
+                                <div class="skill-item" data-skill="jetcompose">
+                                    <span class="skill-name">JetCompose</span>
+                                    <span class="skill-level">Intermediate</span>
+                                </div>
+                                <div class="skill-item" data-skill="sqlite">
+                                    <span class="skill-name">SQLite</span>
+                                    <span class="skill-level">Advanced</span>
+                                </div>
+                                <div class="skill-item" data-skill="firebase">
+                                    <span class="skill-name">Firebase</span>
+                                    <span class="skill-level">Intermediate</span>
+                                </div>
+                                <div class="skill-item" data-skill="git">
+                                    <span class="skill-name">Git</span>
+                                    <span class="skill-level">Advanced</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="skills-legend">
-                        <h3>Legend</h3>
+                    <div class="constellation-controls">
+                        <span class="control-info">⭐ Hover over stars to explore • Click constellations to focus • Watch
+                            the cosmic dance</span>
+                    </div>
+                    <div class="constellation-legend">
+                        <h3>Cosmic Domains</h3>
                         <div class="legend-grid">
                             <div class="legend-item">
-                                <div class="legend-color" style="background: #00D4FF; border-color: #0099CC;"></div>
-                                <span>Mobile App (Android)</span>
+                                <div class="legend-color constellation-mobile"></div>
+                                <span>Android Developer Journey</span>
                             </div>
                             <div class="legend-item">
-                                <div class="legend-color" style="background: #FF6B6B; border-color: #CC0000;"></div>
-                                <span>Database Hub</span>
+                                <div class="legend-color constellation-data"></div>
+                                <span>Data Nebula</span>
                             </div>
                             <div class="legend-item">
-                                <div class="legend-color" style="background: #7F52FF; border-color: #5C3ACC;"></div>
-                                <span>Languages & Frameworks</span>
+                                <div class="legend-color constellation-backend"></div>
+                                <span>Backend Cluster</span>
                             </div>
                             <div class="legend-item">
-                                <div class="legend-color" style="background: #FFA500; border-color: #FF8C00;"></div>
-                                <span>Backend & Services</span>
+                                <div class="legend-color constellation-tools"></div>
+                                <span>Dev Tools</span>
                             </div>
                         </div>
                     </div>

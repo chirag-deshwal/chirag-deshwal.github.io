@@ -583,9 +583,17 @@ body:hover .cursor-outline {
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* certificate layout for achievements page */
@@ -814,7 +822,7 @@ body:hover .cursor-outline {
     font-weight: bold;
 }
 
-/* Skills Mind Map Styles */
+/* Skills Constellation Styles */
 .skills-header {
     margin-bottom: 1.5rem;
 }
@@ -829,24 +837,106 @@ body:hover .cursor-outline {
     font-style: italic;
 }
 
-.cytoscape-container {
+.constellation-container {
+    position: relative;
     width: 100%;
     height: 600px;
     border: 2px solid rgba(254, 76, 76, 0.2);
     border-radius: 14px;
     background: linear-gradient(135deg, rgba(11, 12, 21, 0.95) 0%, rgba(21, 22, 33, 0.95) 100%);
     margin: 1.5rem 0;
-    position: relative;
-    display: block;
     box-shadow: 0 0 30px rgba(254, 76, 76, 0.1), inset 0 0 20px rgba(0, 212, 255, 0.05);
     overflow: hidden;
 }
 
-.cytoscape-container canvas {
-    filter: drop-shadow(0 0 1px rgba(254, 76, 76, 0.1));
+.skills-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    cursor: crosshair;
 }
 
-.skills-controls {
+.constellation-info {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 280px;
+    background: rgba(21, 22, 33, 0.9);
+    border: 1px solid rgba(254, 76, 76, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    backdrop-filter: blur(10px);
+    animation: slideInRight 0.5s ease;
+}
+
+.info-panel {
+    margin-bottom: 1.5rem;
+}
+
+.info-panel h3 {
+    color: var(--accent-red);
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-panel h3::before {
+    content: '🌟';
+}
+
+.info-panel p {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.skill-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.skill-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.6rem 0.8rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+}
+
+.skill-item:hover {
+    background: rgba(254, 76, 76, 0.1);
+    transform: translateX(4px);
+}
+
+.skill-item.active {
+    background: rgba(254, 76, 76, 0.15);
+    border-left-color: var(--accent-red);
+    box-shadow: 0 0 10px rgba(254, 76, 76, 0.3);
+}
+
+.skill-name {
+    color: var(--text-main);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.skill-level {
+    color: var(--accent-red);
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(254, 76, 76, 0.1);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+.constellation-controls {
     display: flex;
     align-items: center;
     gap: 1.2rem;
@@ -913,7 +1003,7 @@ body:hover .cursor-outline {
     animation: fadeIn 0.5s ease;
 }
 
-.skills-legend {
+.constellation-legend {
     margin-top: 2rem;
     padding: 1.5rem;
     background: linear-gradient(135deg, rgba(21, 22, 33, 0.6) 0%, rgba(15, 16, 25, 0.6) 100%);
@@ -921,7 +1011,7 @@ body:hover .cursor-outline {
     border-radius: 12px;
 }
 
-.skills-legend h3 {
+.constellation-legend h3 {
     color: var(--text-main);
     font-size: 1rem;
     margin-bottom: 1rem;
@@ -930,8 +1020,8 @@ body:hover .cursor-outline {
     gap: 0.5rem;
 }
 
-.skills-legend h3::before {
-    content: '🎯';
+.constellation-legend h3::before {
+    content: '🌌';
 }
 
 .legend-grid {
@@ -962,11 +1052,70 @@ body:hover .cursor-outline {
     border: 3px solid;
     flex-shrink: 0;
     box-shadow: 0 0 8px currentColor;
+    position: relative;
+    overflow: hidden;
+}
+
+.constellation-mobile {
+    background: radial-gradient(circle, #00D4FF 0%, #0099CC 50%, #006699 100%);
+    animation: twinkle 2s infinite;
+}
+
+.constellation-data {
+    background: radial-gradient(circle, #FF6B6B 0%, #CC0000 50%, #990000 100%);
+    animation: twinkle 2.5s infinite;
+}
+
+.constellation-backend {
+    background: radial-gradient(circle, #FFA500 0%, #FF8C00 50%, #CC7000 100%);
+    animation: twinkle 3s infinite;
+}
+
+.constellation-tools {
+    background: radial-gradient(circle, #7F52FF 0%, #5C3ACC 50%, #4A2A99 100%);
+    animation: twinkle 1.5s infinite;
 }
 
 .legend-item span {
     color: var(--text-muted);
     font-size: 0.85rem;
+}
+
+/* Animations */
+@keyframes twinkle {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.7;
+        transform: scale(1.1);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .detail-item a {
@@ -1065,135 +1214,38 @@ body:hover .cursor-outline {
 /* Responsive */
 @media (max-width: 900px) {
     .app-container {
-        display: block;
-        height: 100vh;
-        overflow: hidden;
-    }
-
-    .main-content {
-        height: 100%;
-        overflow-y: auto;
-        padding: 1rem;
-        padding-bottom: 90px; /* Space for bottom nav */
-    }
-
-    .sidebar {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 70px;
-        flex-direction: row;
-        padding: 0;
-        border-right: none;
-        border-top: 1px solid var(--border-color);
-        background: rgba(21, 22, 33, 0.95);
-        backdrop-filter: blur(10px);
-        z-index: 1000;
-        justify-content: center;
-    }
-
-    .brand, .user-mini-profile {
-        display: none;
-    }
-
-    .nav-menu {
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        width: 100%;
-        margin: 0;
-        padding: 0 5px;
-        gap: 0;
-    }
-
-    .nav-item {
-        flex-direction: column;
-        gap: 4px;
-        padding: 8px 0;
-        border: none !important;
-        border-radius: 8px;
-        flex: 1;
-        text-align: center;
-        justify-content: center;
-    }
-
-    .nav-item i {
-        font-size: 1.2rem;
-    }
-
-    .nav-item span {
-        font-size: 0.55rem;
-        display: block;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .nav-item:hover,
-    .nav-item.active {
-        background: rgba(254, 76, 76, 0.1);
-        color: var(--accent-red);
-        border: none !important;
-    }
-
-    .dashboard-grid, .bottom-grid, .achievements-list, .projects-grid, .contact-grid {
         grid-template-columns: 1fr;
     }
 
-    .hero-card {
-        padding: 1.5rem;
+    .sidebar {
+        display: none;
+        /* Hide sidebar on mobile for now, or make hamburger */
     }
 
-    .signature-name {
-        font-size: 3rem;
+    /* For simplicity in this turn, focusing on desktop structure */
+    .dashboard-grid {
+        grid-template-columns: 1fr;
     }
 
-    .role-title {
-        font-size: 1.5rem;
+    .achievements-list {
+        grid-template-columns: 1fr;
     }
 
     .hero-character {
-        position: absolute;
+        position: relative;
         width: 100%;
-        height: 250px;
-        opacity: 0.15;
-        bottom: 0;
-        right: -10%;
+        height: 300px;
+        opacity: 0.3;
+        margin-top: -100px;
         pointer-events: none;
-        margin-top: 0;
     }
 
     .hero-body {
         max-width: 100%;
-        position: relative;
-        z-index: 20;
     }
 
-    .action-buttons {
-        flex-direction: column;
-        gap: 0.8rem;
-    }
-
-    .action-buttons button, .action-buttons a {
-        width: 100%;
-        justify-content: center;
-    }
-
-    /* Skills Constellation Fixes */
-    .constellation-container {
-        height: 500px;
-    }
-
-    .constellation-info {
-        width: calc(100% - 2rem);
-        max-height: 200px;
-        overflow-y: auto;
-        top: auto;
-        bottom: 1rem;
-        left: 1rem;
-        right: 1rem;
+    .projects-grid {
+        grid-template-columns: 1fr;
     }
 }
 
